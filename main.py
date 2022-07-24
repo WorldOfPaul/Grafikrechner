@@ -4,7 +4,9 @@ from tkinter import messagebox
 import random
 import os
 import darkdetect
-
+import math
+import numpy as np
+import time
 
 # public variables
 turtle_is_currently_drawing = False
@@ -49,6 +51,17 @@ else:
 # Create the turtle (pen)
 t = turtle.RawTurtle(turtle_screen)
 
+"""i = 0
+punkte = [[0, 0], [4, 2]]
+angle = math.atan((punkte[i + 1][1] - punkte[i][1]) / (punkte[i + 1][0] - punkte[i][0]))
+distance = math.sqrt((punkte[i + 1][1] - punkte[i][1])**2 + (punkte[i + 1][0] - punkte[i][0])**2)
+
+t.setheading(math.degrees(angle))
+t.forward(distance * unit_size)
+#t.forward(distance * unit_size)"""
+
+
+
 # standard pen attributes and pen colors
 darkmode_pen_colors = ["#ff9eea", "#ff5454", "#6b54ff", "#85baff", "#8aff97", "#ff8b33"]
 lightmode_pen_colors = ["#08F7FE", "#7122FA", "#14fc14", "#ff8400", "#ff0000"]
@@ -81,31 +94,40 @@ def print_function(entered_function, Startwert, Endwert):
             parabel_positions = []
 
             if Startwert == "" and Endwert == "":
-                for x in range(-60, 60):
-                    function = entered_function.replace("x", "*(" + str(x) + ")")
-                    print(function)
+                for x in np.arange(-240, 240):
+                    function = entered_function.replace("x", "*(" + str(x/4) + ")")
+
                     y = eval(function)
-                    if int(y) < 60 and int(y) > -60:
-                        parabel_positions.append([int(x), int(y)])
+                    if y < 60 and y > -60:
+                        parabel_positions.append([x/4, y])
             else:
                 for x in range(int(Startwert), int(Endwert)):
                     function = entered_function.replace("x", "*(" + str(x) + ")")
                     y = eval(function)
                     parabel_positions.append([int(x), int(y)])
 
-
+            print(parabel_positions)
             # go to first location without the pen drawing
             t.penup()
             t.goto(int(parabel_positions[0][0]) * unit_size, int(parabel_positions[0][1]) * unit_size)
             t.pendown()
 
-            for position in parabel_positions:
-                t.goto(int(position[0]) * unit_size, int(position[1]) * unit_size)
+            #t.speed(0)
+            turtle_screen.tracer(0, 50000)
+
+            for i in np.arange(len(parabel_positions)):
+                print("test")
+                angle = math.atan((parabel_positions[i + 1][1] - parabel_positions[i][1]) / (parabel_positions[i + 1][0] - parabel_positions[i][0]))
+                distance = math.sqrt((parabel_positions[i + 1][1] - parabel_positions[i][1]) ** 2 + (parabel_positions[i + 1][0] - parabel_positions[i][0]) ** 2)
+
+                t.setheading(math.degrees(angle))
+                t.forward(distance * unit_size)
+
 
             t.penup()
             t.goto(0, 0)
             t.pendown()
-
+            turtle_screen.update()
         except:
             pass
 
